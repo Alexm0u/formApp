@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   templateUrl: './dynamic-page.component.html',
@@ -21,6 +21,35 @@ public myForm: FormGroup = this.fb.group({
   get favoriteGames(){
     return this.myForm.get('favoriteGames') as FormArray;
   }
+
+  isValidField (field: string): boolean | null {
+    return this.myForm.controls[field].errors
+    && this.myForm.controls[field].touched;
+  }
+
+  isValidFieldInArray(FormArray: FormArray, index: number){
+    return FormArray.controls[index].errors
+        && FormArray.controls[index].touched; 
+
+  }
+
+  getFieldError(field: string): string | null {
+    if (!this.myForm.controls[field]) return null;
+    const errors = this.myForm.controls[field].errors || {};
+
+    for (const key of Object.keys(errors)) {
+      switch(key) {
+        case 'required': 
+          return 'Este campo es obligatorio';
+        case 'minlength':
+          return `Mínimo ${errors['minlength'].requiredLenght} caracteres`;
+      }
+    }
+
+    return null;
+  }
+
+  
 
   onSubmit():void {
     if (this.myForm.invalid) {
