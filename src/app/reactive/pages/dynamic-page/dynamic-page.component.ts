@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Form, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   templateUrl: './dynamic-page.component.html',
@@ -14,7 +14,9 @@ public myForm: FormGroup = this.fb.group({
     ['Metal Gear', Validators.required],
     ['Metal Slug', Validators.required]
   ])
-})
+});
+
+public newFavorite: FormControl = new FormControl('', Validators.required)
 
   constructor(private fb: FormBuilder){}
 
@@ -49,6 +51,17 @@ public myForm: FormGroup = this.fb.group({
     return null;
   }
 
+  onAddToFavorites():void{
+    if (this.newFavorite.invalid) return;
+    const newGame = this.newFavorite.value;
+
+    this.favoriteGames.push(
+      this.fb.control(newGame, Validators.required)
+    );
+
+    this.newFavorite.reset();
+  }
+
   onDeleteFavorite(index:number):void{
     this.favoriteGames.removeAt(index);
   }
@@ -58,6 +71,7 @@ public myForm: FormGroup = this.fb.group({
       this.myForm.markAllAsTouched();
       return;
     }
+    (this.myForm.controls['favoriteGames'] as FormArray) = this.fb.array([]);
     this.myForm.reset();
   }
 
