@@ -5,14 +5,25 @@ import { Observable, delay, of } from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class EmailValidator implements AsyncValidator {
     
-    validate(control: AbstractControl<any, any>): | Observable<ValidationErrors | null> {
+    validate(control: AbstractControl): | Observable<ValidationErrors | null> {
         const email = control.value;
 
-        return of({
-            emailTaken: true
-        }).pipe(
-            delay(2000)
-        );
+       const httpCallObservable = new Observable<ValidationErrors | null>((subscriber)=>{
+
+        if (email === 'alex@gmail.com') {
+            subscriber.next({emailTaken: true});
+            subscriber.complete();
+            // return;
+        }
+
+        subscriber.next(null);
+        subscriber.complete();
+
+       }).pipe(
+        delay(3000)
+       );
+
+       return httpCallObservable
     }
     
      
